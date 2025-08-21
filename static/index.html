@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitorización de Tráfico en Tiempo Real</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <a href="#" onclick="showSection('home')">Página principal</a>
+            <a href="#" onclick="showSection('cadiz')">Cádiz</a>
+            <a href="#" onclick="showSection('sevilla')">Otra localidad</a>
+        </div>
+
+        <div class="dashboard">
+            <div id="home" class="section">
+                <header class="header">
+                    <h1>Sistema de monitorización de tráfico</h1>
+                </header>
+                <p>Este sistema utiliza algoritmos avanzados de Deep Learning para detectar vehículos en tiempo real a partir de video en directo.
+Su arquitectura eficiente permite el análisis continuo del tráfico, el almacenamiento de datos históricos y la visualización clara de resultados en una plataforma web.
+Con ello, se busca apoyar la gestión vial y contribuir a la mejora de la seguridad en las carreteras.</p>
+            </div>
+
+            <div id="cadiz" class="section hidden">
+                <header class="header">
+                    <h1>Monitorización de Tráfico en Cádiz</h1>
+                </header>
+                <div class="upper-content">
+                    <section class="video-section">
+                        <div class="video-container">
+                            <img id="video-feed-cadiz" src="/video_feed_cadiz" alt="Video Feed" />
+                        </div>
+                    </section>
+                    <div class="right-sections">
+                        <section class="counter-section">
+                            <h2>Control de Tráfico</h2>
+                            <div class="data-item">
+                                <div>Automóviles entrando a Cádiz Centro:</div>
+                                <span id="conteo_in" class="pulse">0</span>
+                                <div>Automóviles saliendo de Cádiz Centro:</div>
+                                <span id="conteo_out" class="pulse">0</span>
+                            </div>
+                        </section>  
+                        <section>
+                            <div class="button-group">
+                                <button type="button" class="toggle-button" onclick="toggleSection('cadiz')">Mostrar conteo individual</button>
+                                <button type="button" class="toggle-button-p" onclick="startPrediction()">Iniciar predicción</button>
+                                <button type="button" class="toggle-button-p" onclick="stopPrediction()">Detener predicción</button>
+                            </div>
+                        </section> 
+                        <section class="counter-section"> 
+                            <h2>Uso de modelo LSTM para predicción</h2>
+                            <div class="data-item">
+                                <div class="data-item">
+                                <div>Activar/Desactivar Modelo LSTM: </div>
+                                <span id="running" class="pulse">Desactivada</span>
+                            </div>
+                            </div>
+                            <div class="data-item">
+                                <div>Predicción Entrada :</div>
+                                <span id="predict_in" class="pulse">0</span>
+                                <div>Predicción Salida:</div>
+                                <span id="predict_out" class="pulse">0</span>
+                            </div>
+                            <div class="data-item">
+                                <div>Últimos datos entrando a Cádiz Centro:</div>
+                                <span id="conteo_g_in" class="pulse">0</span>
+                                <div>Últimos datos saliendo de Cádiz Centro:</div>
+                                <span id="conteo_g_out" class="pulse">0</span>
+                            </div>
+                        </section>
+
+                        <section class="additional-section hidden">
+                            <h2>Control individual de tráfico</h2>
+                            <div class="data-item">
+                                <div>Carros entrantes:</div>
+                                <span id="car_in" class="pulse">0</span>
+                                <div>Carros salientes:</div>
+                                <span id="car_out" class="pulse">0</span>
+                            </div>
+                            <div class="data-item">
+                                <div>Autobuses entrantes:</div>
+                                <span id="bus_in" class="pulse">0</span>
+                                <div>Autobuses salientes:</div>
+                                <span id="bus_out" class="pulse">0</span>
+                            </div>
+                            <div class="data-item">
+                                <div>Camiones entrantes:</div>
+                                <span id="truck_in" class="pulse">0</span>
+                                <div>Camiones salientes:</div>
+                                <span id="truck_out" class="pulse">0</span>
+                            </div>
+                        </section>
+                        
+                        <section class="weather-section">
+                            <h2>Información Meteorológica</h2>
+                            <div class="data-item">
+                                <div>Descripción:</div>
+                                <span id="des">-</span>
+                            </div>
+                            <div class="data-item">
+                                <div>Temperatura:</div>
+                                <span id="temp">-</span>
+                            </div>
+                            <div class="data-item">
+                                <div>Humedad:</div>
+                                <span id="hum">-</span>
+                            </div>
+                            <div class="data-item">
+                                <div>Velocidad del viento:</div>
+                                <span id="vel">-</span>
+                            </div>
+                            <div class="data-item">
+                                <div>Ciudad:</div>
+                                <span id="city">-</span>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                <section class="chart-section">
+                    <h2>Gráfico de Tráfico en Tiempo Real</h2>
+                    <div class="chart-container">
+                        <canvas id="trafficChart"></canvas>
+                    </div>
+                </section>
+            </div>
+
+            <div id="sevilla" class="section hidden">
+                <header class="header">
+                    <h1>Monitorización de Tráfico en Vigo</h1>
+                                   </header>
+                <div class="upper-content">
+                    <section class="video-section">
+                        <div class="video-container">
+                            <img id="video-feed-sevilla" src="/video_feed_otra" alt="Video Feed" />
+                        </div>
+                        
+                    </section>
+                    <div class="right-sections">
+                         <section class="counter-section">
+                            <h2>Control de Tráfico </h2>
+                            <div class="data-item">
+                                <div>Hacia el norte:</div>
+                                <span id="conteo_n" class="pulse">0</span>
+                                <div>Hacia el sur:</div>
+                                <span id="conteo_s" class="pulse">0</span>
+                            </div>
+                            <div class="data-item">
+                                <div>Hacia el este:</div>
+                                <span id="conteo_e" class="pulse">0</span>
+                                <div>Hacia el oeste:</div>
+                                <span id="conteo_o" class="pulse">0</span>
+                            </div>
+                        </section>
+                        <section class="counter-section"> 
+                            <h2>Ultimos datos recopilados</h2>
+                            <div class="data-item">
+                                <div>Últimos datos Norte:</div>
+                                <span id="conteo_golbal_na" class="pulse">0</span>
+                                <div>Últimos datos Sur:</div>
+                                <span id="conteo_golbal_sa" class="pulse">0</span>
+                                <div>Últimos datos Este:</div>
+                                <span id="conteo_golbal_ea" class="pulse">0</span>
+                                <div>Últimos datos Oeste:</div>
+                                <span id="conteo_golbal_oa" class="pulse">0</span>
+                            </div>
+                        </section>
+                        
+                        <section class="weather-section">
+                            <h2>Información Meteorológica</h2>
+                            <div class="data-item">
+                                <div>Descripción:</div>
+                                <span id="dess">-</span>
+                            </div>
+                            <div class="data-item">
+                                <div>Temperatura:</div>
+                                <span id="temps">-</span>
+                            </div>
+                            <div class="data-item">
+                                <div>Humedad:</div>
+                                <span id="hums">-</span>
+                            </div>
+                            <div class="data-item">
+                                <div>Velocidad del viento:</div>
+                                <span id="vels">-</span>
+                            </div>
+                            <div class="data-item">
+                                <div>Ciudad:</div>
+                                <span id="citys">-</span>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                <section class="chart-section">
+                    <h2>Gráfico de Tráfico en Tiempo Real</h2>
+                    <div class="chart-container">
+                        <canvas id="trafficChart_sevilla"></canvas>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/script.js"></script>
+
+</body>
+</html>
